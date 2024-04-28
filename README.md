@@ -119,6 +119,6 @@ Congrats you did it!
 
 This is not recommended unless you're making some modifications, and as such should only be performed by more advanced users
 
-You'll need to obtain a copy of [Gradle](https://gradle.org/install/), likely a [JDK](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), and [Jekyll](https://jekyllrb.com/). You'll also need the project files in some capacity, be it `git clone` or downloading the archive from GitHub.
+You'll need to obtain a copy of [Gradle](https://gradle.org/install/), likely a [JDK](https://www.oracle.com/java/technologies/javase/jdk11-archive-downloads.html), and [Jekyll](https://jekyllrb.com/). You'll also need the project files in some capacity, be it `git clone` or downloading the archive from GitHub.
 
 From there, building in Gradle is simple; just run `gradle clean shadowJar` from the project file directory. That should produce a jar file in `build/libs` that will work for you. In addition, you'll need to build the Jekyll webpages, which can be done by running `jekyll build --source _web --destination web`
