@@ -74,7 +74,7 @@ hr {
 
 #sbeats {
     position:relative;
-    wdith: 150px;
+    width: 150px;
     left:10px;
 }
 
@@ -82,7 +82,12 @@ hr {
 #stime {
     position:relative;
     float:right;
+}
 
+#schance {
+    position:relative;
+    left: 50%;
+    translate: translateX(-50%);
 }
 
 #file {

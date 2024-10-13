@@ -31,7 +31,6 @@
     var growthPerPlay = 10;
     var curGrowFactor = 1;
 
-
     var jukeboxData = {
         infiniteMode: true,      // if true, allow branching
         maxBranches: 4,        // max branches allowed per beat
@@ -529,6 +528,9 @@
 
             history.replaceState({}, document.title, p);
             tweetSetup(track);
+
+            // save to local storage
+            localStorage.setItem('eternalJukebox', JSON.stringify({"justBackwards": jukeboxData.justBackwards, "justLongBranches": jukeboxData.justLongBranches, "removeSequentialBranches": jukeboxData.removeSequentialBranches, "minRandomBranchChance": jukeboxData.minRandomBranchChance, "maxRandomBranchChance": jukeboxData.maxRandomBranchChance, "randomBranchChanceDelta": jukeboxData.randomBranchChanceDelta}));
         }
     }
 
@@ -1616,6 +1618,25 @@
             remixer = createJRemixer(context);
             player = remixer.getPlayer();
             processParams();
+        }
+
+         // local storage
+        var storageKey = "eternalJukebox";
+        
+        // check if data already exists
+        if (localStorage.getItem(storageKey)) {
+            var data = JSON.parse(localStorage.getItem(storageKey));
+            jukeboxData.justBackwards = data.justBackwards;
+            jukeboxData.justLongBranches = data.justLongBranches;
+            jukeboxData.removeSequentialBranches = data.removeSequentialBranches;
+            jukeboxData.minRandomBranchChance = data.minRandomBranchChance;
+            jukeboxData.maxRandomBranchChance = data.maxRandomBranchChance;
+            jukeboxData.randomBranchChanceDelta = data.randomBranchChanceDelta;
+
+            setTunedURL();
+        } else {
+            // save default values
+            localStorage.setItem(storageKey, JSON.stringify({"justBackwards": false, "justLongBranches": false, "removeSequentialBranches": false, "minRandomBranchChance": defaultMinRandomBranchChance, "maxRandomBranchChance": defaultMaxRandomBranchChance, "randomBranchChanceDelta": defaultRandomBranchChanceDelta}));
         }
     }
 

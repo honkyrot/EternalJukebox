@@ -1,8 +1,8 @@
 # EternalJukebox
 
-This repository is a fork which fixes bugs because the upstream repo is unmaintained.
+This repository is a fork with some new additions.
 
-You can visit the hosted instance of this repository [here](https://eternalbox.floriegl.tech), in case you want to mess around with it without doing all the hard stuff.
+You can visit the hosted instance of the (forked from) repository [here](https://eternalbox.floriegl.tech), in case you want to mess around with it without doing all the hard stuff.
 
 The source files for the EternalJukebox, a rehosting of the Infinite Jukebox.
 This repo contains everything you need to host the EternalJukebox on your own server!
