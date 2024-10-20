@@ -61,7 +61,6 @@
 
         audioURL: null,		// The URL to play audio from; null means default
         audioOffset: 0,
-        ogAudioURL: null,
 
         minRandomBranchChance: 0,
         maxRandomBranchChance: 0,
@@ -255,6 +254,7 @@
 
 
     function readyToPlay(t) {
+        fetchOgAudioSource(t.info.id);
         setDisplayMode(true);
         driver = Driver(player);
         info("Ready!");
@@ -328,20 +328,22 @@
                 info("Sorry, can't find info for that track: " + error)
             }
         });
+    }
 
+    function fetchOgAudioSource(id) {
         $.ajax({
             url: "/api/audio/jukebox/" + id + "/location",
             dataType: "json",
             type: "GET",
             crossDomain: true,
             success: function (data) {
-                if(data["url"] === undefined) {
-                    $("#og-audio-source").remove();
-                } else {
-                    jukeboxData.ogAudioURL = data["url"];
+                if (data["url"] !== undefined) {
+                    $("#og-audio-source")
+                        .show()
+                        .attr("href", data["url"]);
                 }
             },
-            error: function(xhr, textStatus, error) {
+            error: function (xhr, textStatus, error) {
                 info("Sorry, can't find info for that track: " + error)
             }
         });
@@ -527,6 +529,7 @@
             }
 
             history.replaceState({}, document.title, p);
+            $("#canonize").attr("href", "canonizer_go.html" + p);
             tweetSetup(track);
 
             // save to local storage
@@ -1208,6 +1211,7 @@
         paper = Raphael("tiles", W, H);
 
         $("#error").hide();
+        $("#og-audio-source").hide();
 
         $("#go").click(
             function () {
@@ -1236,18 +1240,6 @@
                 getShareURL(function (id) {
                     prompt("Copy the URL below and press 'Enter' to automatically close this prompt", window.location.origin + "/api/site/expand/" + id + "/redirect")
                 })
-            }
-        );
-
-        $("#og-audio-source").click(
-            function () {
-                location.href = jukeboxData.ogAudioURL;
-            }
-        );
-
-        $("#canonize").click(
-            function () {
-                location.href = document.URL.replace("jukebox_go", "canonizer_go");
             }
         );
 
@@ -1964,6 +1956,11 @@
 
                 }
             }
+            if (q != null) {
+                $("#canonize").attr("href", "canonizer_go.html?" + q.join('&'));
+            } else {
+                $("#canonize").attr("href", "canonizer_go.html");
+            }
             setDisplayMode(true);
             fetchAnalysis(id);
         } else {
@@ -2027,7 +2024,6 @@
 
     var canonizerData = {
         audioURL: null,
-        ogAudioURL: null,
         tuningOpen: false
     };
 
@@ -2079,6 +2075,7 @@
 
     function readyToPlay(t) {
         if (t.status === 'ok') {
+            fetchOgAudioSource(t.info.id);
             curTrack = t;
             trackDuration = curTrack.audio_summary.duration;
             trackReady(curTrack);
@@ -2278,20 +2275,22 @@
                 info("Sorry, can't find info for that track: " + error)
             }
         });
+    }
 
+    function fetchOgAudioSource(id) {
         $.ajax({
             url: "/api/audio/jukebox/" + id + "/location",
             dataType: "json",
             type: "GET",
             crossDomain: true,
             success: function (data) {
-                if(data["url"] === undefined) {
-                    $("#og-audio-source").remove();
-                } else {
-                    canonizerData.ogAudioURL = data["url"];
+                if (data["url"] !== undefined) {
+                    $("#og-audio-source")
+                        .show()
+                        .attr("href", data["url"]);
                 }
             },
-            error: function(xhr, textStatus, error) {
+            error: function (xhr, textStatus, error) {
                 info("Sorry, can't find info for that track: " + error)
             }
         });
@@ -2349,6 +2348,7 @@
         };
 
         $("#error").hide();
+        $("#og-audio-source").hide();
 
         $("#go").click(
             function () {
@@ -2407,7 +2407,7 @@
 
         $("#audio-upload").change(function () {
             $.ajax({
-                url: "upload/song",
+                url: "/api/audio/upload",
                 type: "POST",
                 data: new FormData($('#audio-upload-form')[0]),
                 processData: false,
@@ -2415,9 +2415,21 @@
                 headers: {
                     "X-XSRF-TOKEN": document.cookie.substring(document.cookie.indexOf("XSRF-TOKEN")).split(";")[0].split("=").slice(1).join("=")
                 },
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            percentComplete = percentComplete * 100;
+                            $('#audio-progress').text(percentComplete + '%');
+                            $('#audio-progress').css('width', percentComplete + '%');
+                        }
+                    }, false);
+                    return xhr;
+                },
                 success: function (data) {
-                    jukeboxData.audioURL = 'upl:' + data["id"];
-                    setTunedURL();
+                    canonizerData.audioURL = 'upl:' + data["id"];
+                    setURL();
                     window.location.reload(true);
                 },
                 error: function (xhr, textStatus, error) {
@@ -2425,18 +2437,6 @@
                 }
             });
         });
-
-        $("#og-audio-source").click(
-            function () {
-                location.href = canonizerData.ogAudioURL;
-            }
-        );
-
-        $("#jukebox").click(
-            function () {
-                location.href = document.URL.replace("canonizer_go", "jukebox_go");
-            }
-        );
 
         W = $(window).width() - 100;
         paper = Raphael("tiles", W, TH);
@@ -2464,8 +2464,9 @@
                 p += "&audio=" + encodeURIComponent(canonizerData.audioURL);
             }
             history.replaceState({}, document.title, p);
+            $("#jukebox").attr("href", "jukebox_go.html" + p);
+            tweetSetup(curTrack);
         }
-        tweetSetup(curTrack);
     }
 
     function tweetSetup(t) {
@@ -2506,6 +2507,11 @@
             canonizerData.audioURL = decodeURIComponent(params['audio']);
         }
 
+        if (q != null) {
+            $("#jukebox").attr("href", "jukebox_go.html?" + q.join('&'));
+        } else {
+            $("#jukebox").attr("href", "jukebox_go.html");
+        }
         if ('id' in params) {
             var id = params['id'];
             fetchAnalysis(id);
@@ -2859,8 +2865,7 @@
         function stop() {
             running = false;
             player.stop();
-            $("#play").text("Play");
-            setURL();
+            $("#go").text("Play");
             $("#tweet-span").show();
         }
 
@@ -2890,8 +2895,7 @@
                 running = true;
                 process();
                 $("#tweet-span").hide();
-                setURL();
-                $("#play").text('Stop');
+                $("#go").text('Stop');
             },
 
             resume: function () {
@@ -2900,8 +2904,7 @@
                 running = true;
                 process();
                 $("#tweet-span").hide();
-                setURL();
-                $("#play").text('Stop');
+                $("#go").text('Stop');
             },
 
             stop: stop,
