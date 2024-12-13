@@ -325,8 +325,13 @@
                 gotTheAnalysis(data);
             },
             error: function(xhr, textStatus, error) {
-                if (xhr.responseJSON && typeof xhr.responseJSON.error === "string") {
-                    error = xhr.responseJSON.error;
+                if (xhr.responseJSON) {
+                    if (typeof xhr.responseJSON.error === "string") {
+                        error = xhr.responseJSON.error;
+                    }
+                    if (xhr.responseJSON.show_manual_analysis_info) {
+                        $("#manual-analysis").show();
+                    }
                 }
                 info("Sorry, can't find info for that track: " + error)
             }
@@ -2275,8 +2280,13 @@
                 gotTheAnalysis(data);
             },
             error: function(xhr, textStatus, error) {
-                if (xhr.responseJSON && typeof xhr.responseJSON.error === "string") {
-                    error = xhr.responseJSON.error;
+                if (xhr.responseJSON) {
+                    if (typeof xhr.responseJSON.error === "string") {
+                        error = xhr.responseJSON.error;
+                    }
+                    if (xhr.responseJSON.show_manual_analysis_info) {
+                        $("#manual-analysis").show();
+                    }
                 }
                 info("Sorry, can't find info for that track: " + error)
             }
