@@ -2,10 +2,15 @@
 
 This repository is a fork with some new additions.
 
+extra: In the `\database` folder, there is a `eternal_jukebox.mv.db.init` file. Delete the `eternal_jukebox.mv.db` folder and rename the file to `eternal_jukebox.mv.db`, and it should work.
+
 You can visit the hosted instance of the (forked from) repository [here](https://eternalbox.floriegl.tech), in case you want to mess around with it without doing all the hard stuff.
+
+ps: 
 
 The source files for the EternalJukebox, a rehosting of the Infinite Jukebox.
 This repo contains everything you need to host the EternalJukebox on your own server!
+
 
 # Docker Install
 
